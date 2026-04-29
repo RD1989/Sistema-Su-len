@@ -183,7 +183,8 @@ function HomePage() {
                       alt="Suélen, corretora de seguros responsável pela Coonecta"
                       width={288}
                       height={288}
-                      loading="eager"
+                      loading="lazy"
+                      decoding="async"
                       className="relative h-56 w-56 rounded-full object-cover shadow-xl ring-4 ring-white/40 sm:h-64 sm:w-64"
                     />
                   </div>
@@ -273,7 +274,7 @@ function HomePage() {
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
                   transition={{ delay: 0.1 + i * 0.07 }}
-                  className="group rounded-2xl border border-white/70 bg-white/70 p-4 transition-all hover:-translate-y-0.5 hover:border-[var(--brand-purple)]/25 hover:shadow-md sm:p-5"
+                  className="group rounded-2xl border border-white/70 bg-white/70 p-4 transition-all hover:-translate-y-1 hover:scale-[1.02] hover:border-[var(--brand-purple)]/25 hover:shadow-elegant sm:p-5"
                 >
                   <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[image:var(--gradient-brand)] text-white shadow-sm">
                     <Icon className="h-4.5 w-4.5" />
@@ -350,7 +351,7 @@ function HomePage() {
         <footer className="relative border-t border-[var(--brand-purple)]/10 bg-white/40 backdrop-blur">
           <div className="mx-auto flex w-full max-w-6xl flex-col items-center justify-between gap-3 px-5 py-6 text-xs text-muted-foreground sm:flex-row sm:px-8">
             <div>
-              © {new Date().getFullYear()} <span className="font-extrabold tracking-wide text-[var(--brand-blue)]">COONECTA</span> Proteção Auto · Corretora responsável: Suélen
+              © <span suppressHydrationWarning>{new Date().getFullYear()}</span> <span className="font-extrabold tracking-wide text-[var(--brand-blue)]">COONECTA</span> Proteção Auto · Corretora responsável: Suélen
             </div>
             <Link
               to="/login"

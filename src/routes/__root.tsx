@@ -30,25 +30,25 @@ export const Route = createRootRoute({
   head: () => ({
     meta: [
       { charSet: "utf-8" },
-      { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Corretora Suélen — Seguro auto sob medida" },
+      { name: "viewport", content: "width=device-width, initial-scale=1, maximum-scale=5" },
+      { name: "theme-color", content: "#4a1d96" },
+      { title: "Coonecta — Proteção Auto · Seguro com atendimento humano" },
       {
         name: "description",
         content:
-          "Cotação rápida e personalizada do seu seguro auto com a Corretora Suélen. Atendimento humano, melhores seguradoras do mercado.",
+          "Coonecta Proteção Auto: cotação online em 2 minutos, atendimento humano direto com a corretora Suélen e o melhor custo-benefício do mercado para seu veículo.",
       },
-      { name: "author", content: "Corretora Suélen" },
-      { property: "og:title", content: "Corretora Suélen — Seguro auto sob medida" },
+      { name: "author", content: "Corretora Suélen · Coonecta" },
+      { property: "og:title", content: "Coonecta — Proteção Auto · Cotação Online" },
       {
         property: "og:description",
-        content: "Faça sua cotação em menos de 2 minutos com um especialista.",
+        content: "Cotação rápida, atendimento sem robôs e cobertura completa para seu carro. Conecte-se à proteção que realmente cuida de você.",
       },
       { property: "og:type", content: "website" },
+      { property: "og:locale", content: "pt_BR" },
       { name: "twitter:card", content: "summary_large_image" },
-      { name: "twitter:title", content: "Corretora Suélen — Seguro auto sob medida" },
-      { name: "description", content: "Suélen's Brokerage is a web application for insurance sales funnels and CRM." },
-      { property: "og:description", content: "Suélen's Brokerage is a web application for insurance sales funnels and CRM." },
-      { name: "twitter:description", content: "Suélen's Brokerage is a web application for insurance sales funnels and CRM." },
+      { name: "twitter:title", content: "Coonecta — Proteção Auto" },
+      { name: "twitter:description", content: "Proteja seu carro com quem se importa. Atendimento direto com a corretora Suélen." },
       { property: "og:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/28d868ca-8cd1-494a-9093-a8fde7afb4a8/id-preview-44552483--47d88ad0-d76b-4298-a83a-2101beef0137.lovable.app-1777394364006.png" },
       { name: "twitter:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/28d868ca-8cd1-494a-9093-a8fde7afb4a8/id-preview-44552483--47d88ad0-d76b-4298-a83a-2101beef0137.lovable.app-1777394364006.png" },
     ],
@@ -69,7 +69,7 @@ export const Route = createRootRoute({
 
 function RootShell({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="pt-BR">
+    <html lang="pt-BR" className="dark">
       <head>
         <HeadContent />
       </head>

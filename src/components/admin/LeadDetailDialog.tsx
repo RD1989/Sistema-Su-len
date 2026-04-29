@@ -87,35 +87,31 @@ export function LeadDetailDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-2xl p-0 overflow-hidden">
         {/* Header */}
-        <div className="bg-gradient-to-br from-primary/10 via-card to-primary/5 p-6 border-b">
-          <DialogHeader>
-            <div className="flex items-start gap-4">
-              <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-primary text-primary-foreground shadow-glow">
-                <User className="h-6 w-6" />
+        <div className="relative overflow-hidden bg-[oklch(0.12_0.03_265)] p-8 border-b border-white/10">
+          <div className="absolute -right-20 -top-20 h-64 w-64 rounded-full bg-primary/20 blur-3xl" />
+          <DialogHeader className="relative">
+            <div className="flex items-center gap-6">
+              <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-primary to-primary-glow text-white shadow-glow-lg">
+                <User className="h-8 w-8" />
               </div>
               <div className="flex-1 min-w-0">
-                <DialogTitle className="text-xl font-bold truncate">
+                <DialogTitle className="text-2xl font-black tracking-tight text-white">
                   {lead.nome}
                 </DialogTitle>
-                <div className="mt-1 flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
-                  <span className="flex items-center gap-1">
-                    <Calendar className="h-3 w-3" />
+                <div className="mt-2 flex flex-wrap items-center gap-3">
+                  <span className="flex items-center gap-1.5 text-xs font-bold text-white/40 uppercase tracking-wider">
+                    <Calendar className="h-3.5 w-3.5 text-primary" />
                     {format(new Date(lead.created_at), "dd 'de' MMM 'às' HH:mm", { locale: ptBR })}
                   </span>
-                  <span>·</span>
+                  <div className="h-1 w-1 rounded-full bg-white/20" />
                   <span
                     className={cn(
-                      "rounded-full border px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider",
+                      "rounded-full border px-2.5 py-0.5 text-[10px] font-black uppercase tracking-widest",
                       STATUS_COLORS[status],
                     )}
                   >
                     {STATUS_LABEL[status]}
                   </span>
-                  {lead.is_partial && (
-                    <span className="rounded-full border border-warning/40 bg-warning/15 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-warning">
-                      Parcial · Etapa {lead.last_step ?? 1}/4
-                    </span>
-                  )}
                 </div>
               </div>
             </div>
@@ -251,12 +247,12 @@ function Section({
   children: React.ReactNode;
 }) {
   return (
-    <div>
-      <div className="mb-2 flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-muted-foreground">
-        <Icon className="h-3.5 w-3.5" />
+    <div className="animate-in fade-in slide-in-from-left-2 duration-500">
+      <div className="mb-2.5 flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.15em] text-white/30">
+        <Icon className="h-3.5 w-3.5 text-primary" />
         {title}
       </div>
-      <div className="rounded-lg border bg-card/50 p-3.5 space-y-2">{children}</div>
+      <div className="rounded-2xl border border-white/10 bg-white/5 p-4 shadow-inner space-y-2.5">{children}</div>
     </div>
   );
 }
@@ -271,12 +267,12 @@ function Row({
   value: string;
 }) {
   return (
-    <div className="flex items-center justify-between gap-3 text-sm">
-      <span className="flex items-center gap-2 text-muted-foreground">
+    <div className="flex items-center justify-between gap-4 text-sm py-0.5">
+      <span className="flex items-center gap-2 text-white/50 font-medium">
         <Icon className="h-3.5 w-3.5" />
         {label}
       </span>
-      <span className="font-medium text-right truncate">{value}</span>
+      <span className="font-bold text-white text-right truncate">{value}</span>
     </div>
   );
 }

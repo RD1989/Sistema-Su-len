@@ -90,19 +90,19 @@ export function LeadsDataTable({ leads, onStatusChange, onRowClick }: LeadsDataT
         accessorKey: "nome",
         header: "Cliente",
         cell: ({ row }) => (
-          <div className="min-w-[160px]">
+          <div className="min-w-[180px]">
             <div className="flex items-center gap-2">
-              <span className="font-medium truncate">{row.original.nome}</span>
+              <span className="font-black text-white tracking-tight">{row.original.nome}</span>
               {row.original.is_partial && (
                 <span
                   title={`Parou na etapa ${row.original.last_step ?? 1} de 4`}
-                  className="shrink-0 rounded-full border border-warning/40 bg-warning/15 px-1.5 py-0 text-[9px] font-bold uppercase tracking-wider text-warning"
+                  className="shrink-0 rounded-full border border-amber-500/40 bg-amber-500/10 px-2 py-0.5 text-[8px] font-black uppercase tracking-widest text-amber-400"
                 >
                   Parcial
                 </span>
               )}
             </div>
-            <div className="text-xs text-muted-foreground">{row.original.cidade}</div>
+            <div className="text-[10px] font-bold uppercase tracking-widest text-white/40 mt-0.5">{row.original.cidade}</div>
           </div>
         ),
       },
@@ -110,9 +110,9 @@ export function LeadsDataTable({ leads, onStatusChange, onRowClick }: LeadsDataT
         accessorKey: "telefone",
         header: "Contato",
         cell: ({ row }) => (
-          <div className="min-w-[160px] text-sm">
-            <div>{row.original.telefone}</div>
-            <div className="text-xs text-muted-foreground truncate max-w-[200px]">
+          <div className="min-w-[160px]">
+            <div className="font-bold text-white tracking-wide">{row.original.telefone}</div>
+            <div className="text-[10px] font-medium text-white/30 truncate max-w-[180px] mt-0.5">
               {row.original.email}
             </div>
           </div>
@@ -124,12 +124,12 @@ export function LeadsDataTable({ leads, onStatusChange, onRowClick }: LeadsDataT
         cell: ({ row }) => {
           const v = (row.original.veiculo_info ?? {}) as Record<string, unknown>;
           return (
-            <div className="text-sm">
-              <div>
+            <div className="min-w-[140px]">
+              <div className="font-black text-primary-glow text-xs uppercase tracking-tighter">
                 {String(v.marca ?? "")} {String(v.modelo ?? "")}
               </div>
-              <div className="text-xs text-muted-foreground">
-                {String(v.ano ?? "—")}{row.original.uso_veiculo ? ` · uso ${row.original.uso_veiculo}` : ""}
+              <div className="text-[10px] font-bold text-white/40 mt-0.5">
+                {String(v.ano ?? "—")}{row.original.uso_veiculo ? ` · ${row.original.uso_veiculo.toUpperCase()}` : ""}
               </div>
             </div>
           );
@@ -139,10 +139,10 @@ export function LeadsDataTable({ leads, onStatusChange, onRowClick }: LeadsDataT
         accessorKey: "estimativa_plano",
         header: "Plano",
         cell: ({ row }) => (
-          <div className="text-sm">
-            <div>{row.original.estimativa_plano ?? "—"}</div>
+          <div className="min-w-[120px]">
+            <div className="font-bold text-white text-xs">{row.original.estimativa_plano ?? "—"}</div>
             {row.original.estimativa_valor != null && (
-              <div className="text-xs text-muted-foreground">
+              <div className="text-[10px] font-black text-emerald-400/80 mt-0.5 uppercase tracking-widest">
                 R$ {Number(row.original.estimativa_valor).toFixed(0)}/mês
               </div>
             )}
@@ -226,9 +226,9 @@ export function LeadsDataTable({ leads, onStatusChange, onRowClick }: LeadsDataT
         </div>
       </div>
 
-      <div className="rounded-xl border bg-card shadow-soft overflow-hidden">
+      <div className="rounded-2xl border border-white/10 bg-black/40 shadow-2xl overflow-hidden backdrop-blur-xl">
         <Table>
-          <TableHeader>
+          <TableHeader className="bg-white/5">
             {table.getHeaderGroups().map((hg) => (
               <TableRow key={hg.id}>
                 {hg.headers.map((h) => (
@@ -246,7 +246,10 @@ export function LeadsDataTable({ leads, onStatusChange, onRowClick }: LeadsDataT
               table.getRowModel().rows.map((row) => (
                 <TableRow
                   key={row.id}
-                  className={onRowClick ? "cursor-pointer hover:bg-muted/40 transition-colors" : undefined}
+                  className={cn(
+                    "group border-white/5 transition-all",
+                    onRowClick && "cursor-pointer hover:bg-white/5 active:bg-white/10"
+                  )}
                   onClick={(e) => {
                     if ((e.target as HTMLElement).closest("[data-no-row-click]")) return;
                     onRowClick?.(row.original);
@@ -255,6 +258,7 @@ export function LeadsDataTable({ leads, onStatusChange, onRowClick }: LeadsDataT
                   {row.getVisibleCells().map((cell) => (
                     <TableCell
                       key={cell.id}
+                      className="py-4 border-white/5"
                       data-no-row-click={cell.column.id === "status" ? "" : undefined}
                     >
                       {flexRender(cell.column.columnDef.cell, cell.getContext())}

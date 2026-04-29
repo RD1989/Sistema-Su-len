@@ -15,13 +15,15 @@ dist-ssr
 .tanstack/**
 .nitro
 *.local
+.env
+.env.*
+!.env.example
 
-# Wrangler / Cloudflare
-.wrangler/
-.dev.vars
-
-# Editor directories and files
-.vscode/*
+# IDEs
+.vscode/
+.idea/
+.DS_Store
+*.suo
 !.vscode/extensions.json
 .idea
 .DS_Store

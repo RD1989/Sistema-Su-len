@@ -1,6 +1,7 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import {
   Activity,
+  BarChart3,
   CheckCircle2,
   Download,
   KanbanSquare,
@@ -8,22 +9,35 @@ import {
   LogOut,
   RefreshCw,
   ShieldCheck,
+  ShieldCheck as ShieldIcon,
   Sparkles,
   Table as TableIcon,
   Users,
+  Circle,
+  Zap
 } from "lucide-react";
-import { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { 
+  Select, 
+  SelectContent, 
+  SelectItem, 
+  SelectTrigger, 
+  SelectValue 
+} from "@/components/ui/select";
 import { LeadsDataTable } from "@/components/admin/LeadsDataTable";
 import { LeadsKanban } from "@/components/admin/LeadsKanban";
+import { AnalyticsDashboard } from "@/components/admin/AnalyticsDashboard";
 import { LeadDetailDialog } from "@/components/admin/LeadDetailDialog";
 import { useAuth } from "@/hooks/use-auth";
-import { useLeads, type Lead } from "@/hooks/use-leads";
+import { useLeads } from "@/hooks/use-leads";
 import { exportLeadsToCSV } from "@/lib/csv";
-import type { LeadStatus } from "@/lib/leads";
+import { STATUS_OPTIONS, type LeadStatus } from "@/lib/leads";
+import type { Lead } from "@/hooks/use-leads";
+import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/admin")({
   head: () => ({
@@ -37,16 +51,17 @@ export const Route = createFileRoute("/admin")({
 
 function AdminRoute() {
   const navigate = useNavigate();
-  const { user, loading, isStaff, signOut } = useAuth();
+  const { user, loading: authLoading, isStaff, signOut } = useAuth();
+  const { leads, loading: leadsLoading, refetch, updateStatus } = useLeads();
 
   useEffect(() => {
-    if (loading) return;
+    if (authLoading) return;
     if (!user) {
       navigate({ to: "/login", replace: true });
     }
-  }, [user, loading, navigate]);
+  }, [user, authLoading, navigate]);
 
-  if (loading || !user) {
+  if (authLoading || !user) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-tech bg-grid">
         <div className="text-sm text-white/70">Carregando…</div>
@@ -79,49 +94,100 @@ function AdminRoute() {
   }
 
   return (
-    <div className="min-h-screen bg-tech bg-grid text-white">
-      {/* Top bar */}
-      <header className="sticky top-0 z-30 border-b border-white/10 backdrop-blur-xl bg-[oklch(0.16_0.04_265)]/70">
-        <div className="mx-auto flex h-16 max-w-[1500px] items-center justify-between px-4 sm:px-6">
-          <div className="flex items-center gap-3">
-            <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-primary to-primary-glow ring-1 ring-white/20 shadow-glow">
-              <ShieldCheck className="h-5 w-5 text-white" />
+    <div className="min-h-screen dark bg-tech bg-grid text-tech-text selection:bg-primary/30">
+      {/* Nexus Top Bar */}
+      <header className="sticky top-0 z-50 border-b border-white/5 bg-[#020617]/80 backdrop-blur-3xl">
+        <div className="mx-auto flex h-20 max-w-[1600px] items-center justify-between px-8 sm:px-12">
+          <div className="flex items-center gap-6">
+            <div className="relative group cursor-pointer">
+              <div className="absolute -inset-1 rounded-2xl bg-gradient-to-r from-primary to-primary-glow opacity-25 blur transition duration-1000 group-hover:opacity-100 group-hover:duration-200" />
+              <div className="relative flex h-12 w-12 items-center justify-center rounded-2xl bg-slate-900 border border-white/10 ring-1 ring-white/5 transition-all group-hover:scale-105 group-hover:border-primary/50 shadow-2xl">
+                <ShieldIcon className="h-6 w-6 text-primary-glow animate-pulse" />
+              </div>
             </div>
-            <div className="leading-tight">
-              <div className="font-semibold tracking-tight text-white">Corretora Suélen</div>
-              <div className="text-[10px] uppercase tracking-[0.2em] text-white/50">
-                CRM · Painel do corretor
+            <div className="flex flex-col">
+              <div className="flex items-center gap-3">
+                <span className="text-2xl font-black tracking-tight text-white">Nexus</span>
+                <span className="rounded-md bg-primary/10 border border-primary/20 px-2 py-0.5 text-[9px] font-black uppercase tracking-[0.2em] text-primary-glow">Staff Hub</span>
+              </div>
+              <div className="text-[10px] font-bold uppercase tracking-[0.4em] text-white/30">
+                Corretora Suélen · CRM
               </div>
             </div>
           </div>
-          <div className="flex items-center gap-3">
-            <span className="hidden text-xs text-white/60 sm:inline">{user.email}</span>
+
+          <div className="flex items-center gap-8">
+            <div className="hidden lg:flex items-center gap-3 rounded-full bg-slate-900/50 border border-white/5 px-4 py-2">
+              <div className="relative flex h-2 w-2">
+                <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75"></span>
+                <span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-500 shadow-[0_0_10px_rgba(16,185,129,0.8)]"></span>
+              </div>
+              <span className="text-[10px] font-black uppercase tracking-widest text-white/50">Operational Live</span>
+            </div>
+            
+          <div className="flex items-center gap-6">
             <Button
               variant="ghost"
               size="sm"
-              className="text-white/80 hover:text-white hover:bg-white/10"
-              onClick={async () => {
-                await signOut();
-                navigate({ to: "/login" });
-              }}
+              onClick={refetch}
+              disabled={leadsLoading}
+              className="hidden md:flex h-10 rounded-xl border border-white/5 bg-white/[0.03] px-4 font-bold text-white/70 hover:bg-white/10 hover:text-white transition-all"
             >
-              <LogOut className="mr-1 h-4 w-4" />
-              Sair
+              <RefreshCw className={cn("mr-2 h-4 w-4", leadsLoading && "animate-spin")} />
+              Sync
             </Button>
+
+            <div className="h-6 w-px bg-white/10" />
+
+            <div className="flex items-center gap-5">
+              <div className="hidden sm:flex flex-col items-end">
+                <span className="text-sm font-bold text-white tracking-tight">{user.email?.split('@')[0]}</span>
+                <span className="text-[10px] font-medium text-white/30 uppercase tracking-tighter">{user.email}</span>
+              </div>
+              <Button
+                variant="ghost"
+                size="icon"
+                className="group relative h-11 w-11 rounded-2xl bg-white/[0.03] border border-white/5 hover:bg-white/10 hover:border-white/20 transition-all active:scale-95"
+                onClick={async () => {
+                  await signOut();
+                  navigate({ to: "/login" });
+                }}
+              >
+                <LogOut className="h-5 w-5 text-white/40 group-hover:text-white transition-colors" />
+              </Button>
+            </div>
+            </div>
           </div>
         </div>
       </header>
-      <main className="mx-auto max-w-[1500px] p-4 sm:p-6">
-        <AdminPage />
+      <main className="mx-auto max-w-[1600px] p-8 sm:p-12">
+        <AdminPage 
+          leads={leads} 
+          loading={leadsLoading} 
+          refetch={refetch} 
+          updateStatus={updateStatus} 
+        />
       </main>
     </div>
   );
 }
 
-function AdminPage() {
-  const { leads, loading, refetch, updateStatus } = useLeads();
+interface AdminPageProps {
+  leads: Lead[];
+  loading: boolean;
+  refetch: () => Promise<void>;
+  updateStatus: (id: string, status: LeadStatus) => Promise<void>;
+}
+
+function AdminPage({ leads, loading, refetch, updateStatus }: AdminPageProps) {
+  const [statusFilter, setStatusFilter] = useState<string>("all");
   const [selected, setSelected] = useState<Lead | null>(null);
   const [open, setOpen] = useState(false);
+
+  const filteredLeads = useMemo(() => {
+    if (statusFilter === "all") return leads;
+    return leads.filter(l => l.status === statusFilter);
+  }, [leads, statusFilter]);
 
   const kpis = useMemo(() => {
     const by = (s: LeadStatus) => leads.filter((l) => l.status === s).length;
@@ -149,97 +215,128 @@ function AdminPage() {
   }
 
   function handleExport() {
-    if (!leads.length) {
-      toast.info("Nenhum lead para exportar.");
+    if (!filteredLeads.length) {
+      toast.info("Nenhum lead correspondente ao filtro para exportar.");
       return;
     }
     const date = new Date().toISOString().slice(0, 10);
-    exportLeadsToCSV(leads, `leads-${date}.csv`);
-    toast.success("CSV exportado.");
+    const filterLabel = statusFilter === "all" ? "todos" : statusFilter;
+    exportLeadsToCSV(filteredLeads, `leads-nexus-${filterLabel}-${date}.csv`);
+    toast.success(`${filteredLeads.length} leads exportados.`);
   }
 
   return (
-    <div className="space-y-6">
-      {/* Title row */}
-      <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
-        <div>
-          <div className="inline-flex items-center gap-2 rounded-full bg-white/5 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.2em] text-white/70 ring-1 ring-white/10">
-            <LayoutDashboard className="h-3 w-3" /> Dashboard
+    <div className="space-y-10 animate-in fade-in slide-in-from-bottom-4 duration-1000 ease-transition-smooth">
+      {/* Hero Section */}
+      <div className="flex flex-col gap-8 lg:flex-row lg:items-end lg:justify-between">
+        <div className="space-y-4">
+          <div className="inline-flex items-center gap-3 rounded-full bg-slate-900 border border-white/10 px-5 py-2 text-[10px] font-black uppercase tracking-[0.25em] text-primary-glow shadow-2xl">
+            <Zap className="h-4 w-4 fill-primary-glow" /> Intelligence Unit
           </div>
-          <h1 className="mt-2 text-3xl font-bold tracking-tight text-white">
-            Gestão de leads
+          <h1 className="text-6xl font-black tracking-tighter text-white sm:text-8xl drop-shadow-[0_10px_40px_rgba(0,0,0,0.9)]">
+            Gestão de <span className="text-transparent bg-clip-text bg-gradient-to-br from-primary-glow via-white to-primary-glow">Leads</span>
           </h1>
-          <p className="text-sm text-white/60">
-            Acompanhe e gerencie todos os clientes captados pelo funil em tempo real.
+          <p className="text-xl text-white/40 max-w-2xl font-medium leading-relaxed tracking-tight">
+            Monitoramento tático e conversão acelerada. Sincronize dados operacionais em tempo real com a infraestrutura Nexus.
           </p>
         </div>
-        <div className="flex items-center gap-2">
+        
+        <div className="flex flex-wrap items-end gap-5">
+          <div className="flex flex-col gap-2">
+            <span className="text-[10px] font-black uppercase tracking-widest text-white/30 ml-1">Filtro de Exportação</span>
+            <Select value={statusFilter} onValueChange={setStatusFilter}>
+              <SelectTrigger className="w-[200px] h-16 rounded-2xl border-white/10 bg-white/[0.03] text-white font-bold transition-all focus:ring-primary/40">
+                <SelectValue placeholder="Todos os Leads" />
+              </SelectTrigger>
+              <SelectContent className="bg-slate-900 border-white/10 text-white rounded-2xl">
+                <SelectItem value="all" className="font-bold focus:bg-primary focus:text-white rounded-xl">Todos os Leads</SelectItem>
+                {STATUS_OPTIONS.map(opt => (
+                  <SelectItem key={opt.value} value={opt.value} className="font-bold focus:bg-primary focus:text-white rounded-xl">
+                    {opt.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+
           <Button
-            variant="outline"
-            size="sm"
-            onClick={refetch}
-            disabled={loading}
-            className="bg-white/5 border-white/15 text-white hover:bg-white/10"
-          >
-            <RefreshCw className={loading ? "mr-1 h-4 w-4 animate-spin" : "mr-1 h-4 w-4"} />
-            Atualizar
-          </Button>
-          <Button
-            size="sm"
+            size="lg"
             onClick={handleExport}
-            className="bg-gradient-to-r from-primary to-primary-glow shadow-glow"
+            className="h-16 rounded-[1.25rem] bg-gradient-to-br from-primary to-indigo-600 px-10 font-black text-white shadow-[0_20px_50px_-15px_rgba(124,58,237,0.5)] transition-all hover:scale-[1.02] active:scale-95"
           >
-            <Download className="mr-1 h-4 w-4" />
-            Exportar CSV
+            <Download className="mr-3 h-6 w-6" />
+            Export to Nexus
           </Button>
         </div>
       </div>
 
       {/* KPIs */}
-      <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-        <KpiCard icon={Users} label="Total de leads" value={kpis.total} accent="from-primary to-primary-glow" />
-        <KpiCard icon={Sparkles} label="Novos" value={kpis.novos} accent="from-[oklch(0.62_0.18_280)] to-[oklch(0.72_0.16_300)]" />
-        <KpiCard icon={Activity} label="Em atendimento" value={kpis.em_atendimento} accent="from-[oklch(0.7_0.14_195)] to-[oklch(0.78_0.16_220)]" />
-        <KpiCard icon={CheckCircle2} label="Fechados" value={kpis.fechados} accent="from-success to-[oklch(0.78_0.16_155)]" />
+      <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
+        <KpiCard icon={Users} label="Total Acumulado" value={kpis.total} accent="from-primary to-primary-glow" />
+        <KpiCard icon={Sparkles} label="Novos Hoje" value={kpis.novos} accent="from-amber-400 to-orange-500" />
+        <KpiCard icon={Activity} label="Em Negociação" value={kpis.em_atendimento} accent="from-blue-400 to-indigo-600" />
+        <KpiCard icon={CheckCircle2} label="Conversões" value={kpis.fechados} accent="from-emerald-400 to-teal-600" />
       </div>
 
-      {/* Tabs */}
-      <Tabs defaultValue="table" className="w-full">
-        <TabsList className="bg-white/5 border border-white/10 ring-1 ring-white/5">
-          <TabsTrigger
-            value="table"
-            className="gap-1.5 data-[state=active]:bg-white/10 data-[state=active]:text-white text-white/60"
-          >
-            <TableIcon className="h-4 w-4" />
-            Tabela
-          </TabsTrigger>
-          <TabsTrigger
-            value="kanban"
-            className="gap-1.5 data-[state=active]:bg-white/10 data-[state=active]:text-white text-white/60"
-          >
-            <KanbanSquare className="h-4 w-4" />
-            Kanban
-          </TabsTrigger>
-        </TabsList>
-        <TabsContent value="table" className="mt-4">
-          <div className="rounded-2xl surface-tech p-4 text-foreground bg-card">
-            <LeadsDataTable
-              leads={leads}
-              onStatusChange={handleStatusChange}
-              onRowClick={openLead}
-            />
+      {/* Main View Area */}
+      <div className="glass-strong rounded-[2rem] border border-white/10 overflow-hidden shadow-2xl">
+        <Tabs defaultValue="table" className="w-full">
+          <div className="flex items-center justify-between border-b border-white/5 bg-slate-950/50 px-10 py-6">
+             <TabsList className="bg-slate-900 border border-white/10 h-16 p-2 rounded-2xl">
+              <TabsTrigger
+                value="table"
+                className="gap-4 rounded-xl data-[state=active]:bg-primary data-[state=active]:text-white h-12 px-8 text-xs font-black uppercase tracking-widest transition-all shadow-2xl"
+              >
+                <TableIcon className="h-5 w-5" />
+                Lista Operacional
+              </TabsTrigger>
+              <TabsTrigger
+                value="kanban"
+                className="gap-4 rounded-xl data-[state=active]:bg-primary data-[state=active]:text-white h-12 px-8 text-xs font-black uppercase tracking-widest transition-all shadow-2xl"
+              >
+                <KanbanSquare className="h-5 w-5" />
+                Pipeline Kanban
+              </TabsTrigger>
+              <TabsTrigger
+                value="analytics"
+                className="gap-4 rounded-xl data-[state=active]:bg-primary data-[state=active]:text-white h-12 px-8 text-xs font-black uppercase tracking-widest transition-all shadow-2xl"
+              >
+                <BarChart3 className="h-5 w-5" />
+                Analytics Deep
+              </TabsTrigger>
+            </TabsList>
+            
+            <div className="hidden xl:flex items-center gap-6 text-[10px] font-black uppercase tracking-[0.3em] text-white/20">
+              <div className="flex items-center gap-2">
+                <div className="h-2 w-2 rounded-full bg-emerald-500 shadow-[0_0_15px_rgba(16,185,129,0.5)] animate-pulse" />
+                Nexus Online
+              </div>
+              <div className="h-6 w-px bg-white/5" />
+              <span>Sincronizado: {loading ? 'Sincronizando...' : 'Ready'}</span>
+            </div>
           </div>
-        </TabsContent>
-        <TabsContent value="kanban" className="mt-4">
-          <div className="rounded-2xl surface-tech p-4 text-foreground bg-card">
-            <LeadsKanban
-              leads={leads}
-              onStatusChange={handleStatusChange}
-              onCardClick={openLead}
-            />
+
+          <div className="p-6">
+            <TabsContent value="table" className="mt-0 focus-visible:outline-none">
+              <LeadsDataTable
+                leads={filteredLeads}
+                onStatusChange={handleStatusChange}
+                onRowClick={openLead}
+              />
+            </TabsContent>
+            <TabsContent value="kanban" className="mt-0 focus-visible:outline-none">
+              <LeadsKanban
+                leads={filteredLeads}
+                onStatusChange={handleStatusChange}
+                onCardClick={openLead}
+              />
+            </TabsContent>
+            <TabsContent value="analytics" className="mt-0 focus-visible:outline-none">
+              <AnalyticsDashboard leads={filteredLeads} />
+            </TabsContent>
           </div>
-        </TabsContent>
-      </Tabs>
+        </Tabs>
+      </div>
 
       <LeadDetailDialog
         lead={selected}
@@ -263,17 +360,17 @@ function KpiCard({
   accent: string;
 }) {
   return (
-    <div className="relative overflow-hidden rounded-2xl surface-tech p-4">
-      <div className={`absolute -right-8 -top-8 h-28 w-28 rounded-full bg-gradient-to-br ${accent} opacity-20 blur-2xl`} />
-      <div className="relative flex items-start justify-between">
+    <div className="group relative overflow-hidden rounded-3xl glass-strong border border-white/10 p-6 transition-all hover:scale-[1.02] hover:border-white/20 shadow-lg">
+      <div className={`absolute -right-12 -top-12 h-32 w-32 rounded-full bg-gradient-to-br ${accent} opacity-10 blur-3xl transition-opacity group-hover:opacity-20`} />
+      <div className="relative flex items-center justify-between">
         <div>
-          <div className="text-[10px] font-bold uppercase tracking-[0.18em] text-white/50">
+          <div className="text-[11px] font-black uppercase tracking-[0.2em] text-white/40">
             {label}
           </div>
-          <div className="mt-2 text-3xl font-bold text-white tabular-nums">{value}</div>
+          <div className="mt-1 text-4xl font-black text-white tabular-nums tracking-tight">{value}</div>
         </div>
-        <div className={`flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br ${accent} text-white shadow-glow`}>
-          <Icon className="h-4 w-4" />
+        <div className={`flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br ${accent} text-white shadow-glow-lg transition-transform group-hover:rotate-6`}>
+          <Icon className="h-7 w-7" />
         </div>
       </div>
     </div>

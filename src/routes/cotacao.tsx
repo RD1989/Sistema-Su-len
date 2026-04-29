@@ -227,6 +227,8 @@ function FunnelPage() {
               className="h-full w-full object-cover opacity-35"
               width={1080}
               height={1920}
+              loading="lazy"
+              decoding="async"
             />
             <div className="absolute inset-0 bg-gradient-to-br from-[oklch(0.16_0.06_270)]/95 via-[oklch(0.20_0.10_290)]/80 to-[oklch(0.30_0.15_310)]/40" />
             <div className="absolute inset-0 bg-grid opacity-[0.18]" />

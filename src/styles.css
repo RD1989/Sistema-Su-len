@@ -1,6 +1,8 @@
-@import "tailwindcss" source(none);
-@source "../src";
+@import "tailwindcss";
+
+
 @import "tw-animate-css";
+
 
 @custom-variant dark (&:is(.dark *));
 
@@ -65,18 +67,18 @@
   --brand-blue: oklch(0.25 0.20 270);
   --brand-purple-soft: oklch(0.55 0.22 295);
 
-  --background: oklch(0.985 0.005 270);
-  --foreground: oklch(0.16 0.05 270);
+  --background: #020617; /* Deepest Navy */
+  --foreground: #f8fafc;
 
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.16 0.05 270);
+  --card: #0f172a;
+  --card-foreground: #f8fafc;
 
   --popover: oklch(1 0 0);
   --popover-foreground: oklch(0.16 0.05 270);
 
-  --primary: oklch(0.32 0.22 278);
-  --primary-foreground: oklch(0.985 0.005 270);
-  --primary-glow: oklch(0.55 0.24 295);
+  --primary: #8b5cf6; /* Vibrant Purple (violet-500) */
+  --primary-foreground: #ffffff;
+  --primary-glow: #a78bfa; /* violet-400 */
 
   --secondary: oklch(0.96 0.018 280);
   --secondary-foreground: oklch(0.22 0.10 275);
@@ -132,17 +134,23 @@
 
   --transition-smooth: cubic-bezier(0.22, 1, 0.36, 1);
 
-  /* Tech / CRM tokens */
-  --tech-bg: oklch(0.16 0.04 265);
-  --tech-surface: oklch(0.22 0.05 268);
-  --tech-surface-2: oklch(0.26 0.06 270);
-  --tech-border: color-mix(in oklab, white 10%, transparent);
-  --tech-text: oklch(0.97 0.01 250);
-  --tech-muted: oklch(0.72 0.03 255);
-  --gradient-tech: radial-gradient(1200px 600px at 0% 0%, oklch(0.32 0.14 280 / 0.55), transparent 60%),
-                   radial-gradient(900px 500px at 100% 100%, oklch(0.5 0.2 320 / 0.35), transparent 60%),
-                   linear-gradient(180deg, oklch(0.14 0.04 268), oklch(0.18 0.05 275));
-  --grid-line: color-mix(in oklab, white 6%, transparent);
+  /* Nexus CRM - Premium Deep Dark System */
+  --tech-bg: #020617; /* Deepest Navy (slate-950) */
+  --tech-surface: #0f172a; /* slate-900 */
+  --tech-surface-2: #1e293b; /* slate-800 */
+  --tech-border: rgba(255, 255, 255, 0.08);
+  --tech-border-bright: rgba(255, 255, 255, 0.15);
+  --tech-text: #f8fafc; /* slate-50 */
+  --tech-muted: #94a3b8; /* slate-400 */
+  
+  --primary: #7c3aed; /* Deep Violet */
+  --primary-glow: #a78bfa; /* Soft Violet */
+  --primary-foreground: #ffffff;
+  
+  --gradient-tech: radial-gradient(circle at 0% 0%, rgba(124, 58, 237, 0.15) 0%, transparent 50%),
+                   radial-gradient(circle at 100% 100%, rgba(139, 92, 246, 0.1) 0%, transparent 50%),
+                   linear-gradient(180deg, #020617 0%, #0f172a 100%);
+  --grid-line: rgba(255, 255, 255, 0.03);
 }
 
 .dark {
@@ -214,10 +222,11 @@
   }
 
   body {
-    background-color: var(--color-background);
+    background-color: #020617; /* Fallback Solid Deep Dark */
     color: var(--color-foreground);
     font-feature-settings: "cv02", "cv03", "cv04", "cv11";
     -webkit-font-smoothing: antialiased;
+    min-height: 100vh;
   }
 
   h1, h2, h3, h4, h5 {
@@ -235,15 +244,16 @@
   }
 
   .glass-strong {
-    background-color: color-mix(in oklab, white 80%, transparent);
-    backdrop-filter: blur(28px) saturate(160%);
-    -webkit-backdrop-filter: blur(28px) saturate(160%);
-    border: 1px solid color-mix(in oklab, white 60%, transparent);
+    background-color: rgba(2, 6, 23, 0.8);
+    backdrop-filter: blur(24px) saturate(160%);
+    -webkit-backdrop-filter: blur(24px) saturate(160%);
+    border: 1px solid var(--tech-border);
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
   }
 
   .dark .glass-strong {
-    background-color: color-mix(in oklab, oklch(0.18 0.035 265) 75%, transparent);
-    border-color: color-mix(in oklab, white 14%, transparent);
+    background-color: rgba(15, 23, 42, 0.85);
+    border-color: var(--tech-border-bright);
   }
 
   .bg-hero {
@@ -297,7 +307,23 @@
                 0 12px 40px -12px color-mix(in oklab, var(--primary-glow) 50%, transparent);
   }
 
+  .glass-light {
+    background-color: color-mix(in oklab, white 15%, transparent);
+    backdrop-filter: blur(12px) saturate(120%);
+    -webkit-backdrop-filter: blur(12px) saturate(120%);
+    border: 1px solid color-mix(in oklab, white 10%, transparent);
+  }
+
+  .dark .glass-light {
+    background-color: color-mix(in oklab, white 8%, transparent);
+    border-color: color-mix(in oklab, white 6%, transparent);
+  }
+
   .text-tech-muted { color: var(--tech-muted); }
+
+  .shadow-glow-lg {
+    box-shadow: 0 15px 50px -12px color-mix(in oklab, var(--primary-glow) 60%, transparent);
+  }
 }
 
 @keyframes shimmer {
