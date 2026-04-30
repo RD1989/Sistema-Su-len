@@ -1,0 +1,5 @@
+Nexus CRM Vercel Deployment Sync File
+Timestamp: 2026-04-29T22:12:00Z
+Status: Standard TanStack Start Structure Enabled
+Entry Points: src/entry-client.tsx, src/entry-server.tsx
+Config: app.config.ts
