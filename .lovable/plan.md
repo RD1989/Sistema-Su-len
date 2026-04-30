@@ -1,12 +1,15 @@
-## Página em branco com título "Corretora Suélen"
+## Objetivo
 
-Criar uma página simples e limpa exibindo apenas o texto "Corretora Suélen" centralizado.
+Criar uma página inicial simples e em branco exibindo apenas o texto "Consultora Suélen" centralizado.
 
-### O que será feito
-- Substituir o conteúdo placeholder em `src/routes/index.tsx` por uma página em branco com o texto "Corretora Suélen" centralizado vertical e horizontalmente.
-- Atualizar o título da aba (meta title) em `src/routes/__root.tsx` para "Corretora Suélen".
+## O que será feito
 
-### Estilo
-- Fundo branco.
-- Texto em destaque, fonte grande, peso semibold, cor escura neutra.
-- Sem outros elementos (sem header, menu, rodapé ou imagens).
+- Substituir o conteúdo placeholder de `src/routes/index.tsx` por uma página limpa.
+- Fundo branco, texto "Consultora Suélen" centralizado vertical e horizontalmente.
+- Tipografia elegante e discreta (serif ou sans-serif leve), tamanho grande.
+- Atualizar o `<title>` da aba para "Consultora Suélen".
+
+## Fora do escopo
+
+- Sem menus, botões, imagens ou seções adicionais.
+- Sem cores de marca, logo ou formulários (podem ser adicionados depois).

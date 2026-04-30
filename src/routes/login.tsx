@@ -1,17 +1,17 @@
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
-import { Loader2, Lock, ShieldCheck } from "lucide-react";
+import { createFileRoute, useNavigate, Link } from "@tanstack/react-router";
+import { useState, useEffect } from "react";
+import { motion } from "framer-motion";
+import { Mail, Lock, ArrowRight, Loader2 } from "lucide-react";
 import { toast } from "sonner";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { useAuth } from "@/hooks/use-auth";
+import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/hooks/useAuth";
 
 export const Route = createFileRoute("/login")({
   head: () => ({
     meta: [
-      { title: "Acesso do corretor — Corretora Suélen" },
-      { name: "robots", content: "noindex" },
+      { title: "Acesso interno — Nexus CRM" },
+      { name: "description", content: "Área administrativa do Nexus CRM." },
+      { name: "robots", content: "noindex, nofollow" },
     ],
   }),
   component: LoginPage,
@@ -19,105 +19,107 @@ export const Route = createFileRoute("/login")({
 
 function LoginPage() {
   const navigate = useNavigate();
-  const { signIn, user, loading } = useAuth();
+  const { user, loading: authLoading } = useAuth();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [submitting, setSubmitting] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    if (!loading && user) {
-      navigate({ to: "/admin", replace: true });
-    }
-  }, [user, loading, navigate]);
+    if (!authLoading && user) navigate({ to: "/admin/kanban" });
+  }, [user, authLoading, navigate]);
 
-  async function onSubmit(e: React.FormEvent) {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (submitting) return;
-    setSubmitting(true);
-    const { error } = await signIn(email, password);
-    setSubmitting(false);
-    if (error) {
-      toast.error("E-mail ou senha incorretos.");
-      return;
+    setLoading(true);
+    try {
+      const { error } = await supabase.auth.signInWithPassword({ email, password });
+      if (error) throw error;
+      toast.success("Bem-vindo de volta!");
+      navigate({ to: "/admin/kanban" });
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : "Erro ao autenticar";
+      toast.error(msg);
+    } finally {
+      setLoading(false);
     }
-    toast.success("Bem-vindo!");
-    navigate({ to: "/admin", replace: true });
-  }
+  };
+
 
   return (
-    <div className="relative min-h-screen overflow-hidden bg-hero">
-      <div className="absolute inset-0 opacity-30" aria-hidden>
-        <div className="absolute -top-32 -left-20 h-96 w-96 rounded-full bg-primary-glow/40 blur-3xl" />
-        <div className="absolute bottom-0 right-0 h-96 w-96 rounded-full bg-accent/30 blur-3xl" />
+    <div className="relative flex min-h-screen items-center justify-center overflow-hidden bg-background px-4 py-10">
+      {/* Auras */}
+      <div className="pointer-events-none absolute inset-0 -z-10 overflow-hidden">
+        <div
+          className="animate-float-slow absolute -top-40 -left-40 h-[30rem] w-[30rem] rounded-full blur-3xl"
+          style={{ background: "radial-gradient(circle, oklch(0.58 0.24 295 / 0.4), transparent 65%)" }}
+        />
+        <div
+          className="animate-float-slower absolute -bottom-40 -right-40 h-[34rem] w-[34rem] rounded-full blur-3xl"
+          style={{ background: "radial-gradient(circle, oklch(0.62 0.21 255 / 0.35), transparent 65%)" }}
+        />
       </div>
 
-      <div className="relative flex min-h-screen items-center justify-center px-4 py-10">
-        <div className="w-full max-w-md">
-          <div className="mb-6 flex items-center justify-center gap-2 text-white">
-            <ShieldCheck className="h-7 w-7" />
-            <span className="text-xl font-semibold tracking-tight">Corretora Suélen</span>
-          </div>
-
-          <div className="glass-strong rounded-2xl p-8 shadow-elegant">
-            <div className="mb-6 text-center">
-              <div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-primary/10">
-                <Lock className="h-5 w-5 text-primary" />
-              </div>
-              <h1 className="text-2xl font-bold">Acesso do corretor</h1>
-              <p className="mt-1 text-sm text-muted-foreground">
-                Entre para gerenciar seus leads.
-              </p>
-            </div>
-
-            <form onSubmit={onSubmit} className="space-y-4">
-              <div className="space-y-1.5">
-                <Label htmlFor="email">E-mail</Label>
-                <Input
-                  id="email"
-                  type="email"
-                  autoComplete="email"
-                  required
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  placeholder="voce@corretorasuelen.com"
-                />
-              </div>
-
-              <div className="space-y-1.5">
-                <Label htmlFor="password">Senha</Label>
-                <Input
-                  id="password"
-                  type="password"
-                  autoComplete="current-password"
-                  required
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  placeholder="••••••••"
-                />
-              </div>
-
-              <Button
-                type="submit"
-                disabled={submitting}
-                className="w-full bg-gradient-to-r from-primary to-primary-glow text-primary-foreground shadow-glow"
-              >
-                {submitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                Entrar
-              </Button>
-            </form>
-
-            <p className="mt-6 text-center text-xs text-muted-foreground">
-              Acesso restrito. Cadastros são feitos pela administração.
-            </p>
-          </div>
-
-          <p className="mt-4 text-center text-xs text-white/70">
-            <a href="/" className="underline-offset-2 hover:underline">
-              ← Voltar ao site
-            </a>
-          </p>
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
+        className="glass-strong w-full max-w-md rounded-3xl p-8 shadow-elevated sm:p-10"
+      >
+        <div className="text-center">
+          <Link to="/" className="text-xs font-medium text-muted-foreground hover:text-foreground">
+            ← Voltar ao site
+          </Link>
+          <h1 className="font-display mt-4 text-3xl font-extrabold tracking-tight">
+            Nexus<span className="text-gradient-brand"> CRM</span>
+          </h1>
+          <p className="mt-2 text-sm text-muted-foreground">Acesse seu painel</p>
         </div>
-      </div>
+
+        <form onSubmit={handleSubmit} className="mt-6 space-y-3">
+          <div>
+            <label className="mb-1.5 block text-xs font-medium text-muted-foreground">E-mail</label>
+            <div className="relative">
+              <Mail className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+              <input
+                type="email"
+                required
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                className="w-full rounded-xl border border-input bg-card px-4 py-3 pl-10 text-sm outline-none ring-ring/30 transition focus:ring-2"
+                placeholder="voce@exemplo.com"
+              />
+            </div>
+          </div>
+          <div>
+            <label className="mb-1.5 block text-xs font-medium text-muted-foreground">Senha</label>
+            <div className="relative">
+              <Lock className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+              <input
+                type="password"
+                required
+                minLength={6}
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                className="w-full rounded-xl border border-input bg-card px-4 py-3 pl-10 text-sm outline-none ring-ring/30 transition focus:ring-2"
+                placeholder="••••••••"
+              />
+            </div>
+          </div>
+
+          <button
+            type="submit"
+            disabled={loading}
+            className="mt-2 inline-flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-brand px-5 py-3 text-sm font-semibold text-primary-foreground shadow-glow transition-transform hover:scale-[1.02] disabled:opacity-60"
+          >
+            {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : (
+              <>
+                Entrar
+                <ArrowRight className="h-4 w-4" />
+              </>
+            )}
+          </button>
+        </form>
+      </motion.div>
     </div>
   );
 }

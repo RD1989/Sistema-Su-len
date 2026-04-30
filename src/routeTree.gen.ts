@@ -13,6 +13,12 @@ import { Route as LoginRouteImport } from './routes/login'
 import { Route as CotacaoRouteImport } from './routes/cotacao'
 import { Route as AdminRouteImport } from './routes/admin'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AdminIndexRouteImport } from './routes/admin.index'
+import { Route as AdminSettingsRouteImport } from './routes/admin.settings'
+import { Route as AdminPixelsRouteImport } from './routes/admin.pixels'
+import { Route as AdminLeadsRouteImport } from './routes/admin.leads'
+import { Route as AdminKanbanRouteImport } from './routes/admin.kanban'
+import { Route as AdminAnalyticsRouteImport } from './routes/admin.analytics'
 
 const LoginRoute = LoginRouteImport.update({
   id: '/login',
@@ -34,37 +40,114 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AdminIndexRoute = AdminIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminSettingsRoute = AdminSettingsRouteImport.update({
+  id: '/settings',
+  path: '/settings',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminPixelsRoute = AdminPixelsRouteImport.update({
+  id: '/pixels',
+  path: '/pixels',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminLeadsRoute = AdminLeadsRouteImport.update({
+  id: '/leads',
+  path: '/leads',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminKanbanRoute = AdminKanbanRouteImport.update({
+  id: '/kanban',
+  path: '/kanban',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminAnalyticsRoute = AdminAnalyticsRouteImport.update({
+  id: '/analytics',
+  path: '/analytics',
+  getParentRoute: () => AdminRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/admin': typeof AdminRoute
+  '/admin': typeof AdminRouteWithChildren
   '/cotacao': typeof CotacaoRoute
   '/login': typeof LoginRoute
+  '/admin/analytics': typeof AdminAnalyticsRoute
+  '/admin/kanban': typeof AdminKanbanRoute
+  '/admin/leads': typeof AdminLeadsRoute
+  '/admin/pixels': typeof AdminPixelsRoute
+  '/admin/settings': typeof AdminSettingsRoute
+  '/admin/': typeof AdminIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/admin': typeof AdminRoute
   '/cotacao': typeof CotacaoRoute
   '/login': typeof LoginRoute
+  '/admin/analytics': typeof AdminAnalyticsRoute
+  '/admin/kanban': typeof AdminKanbanRoute
+  '/admin/leads': typeof AdminLeadsRoute
+  '/admin/pixels': typeof AdminPixelsRoute
+  '/admin/settings': typeof AdminSettingsRoute
+  '/admin': typeof AdminIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
-  '/admin': typeof AdminRoute
+  '/admin': typeof AdminRouteWithChildren
   '/cotacao': typeof CotacaoRoute
   '/login': typeof LoginRoute
+  '/admin/analytics': typeof AdminAnalyticsRoute
+  '/admin/kanban': typeof AdminKanbanRoute
+  '/admin/leads': typeof AdminLeadsRoute
+  '/admin/pixels': typeof AdminPixelsRoute
+  '/admin/settings': typeof AdminSettingsRoute
+  '/admin/': typeof AdminIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/admin' | '/cotacao' | '/login'
+  fullPaths:
+    | '/'
+    | '/admin'
+    | '/cotacao'
+    | '/login'
+    | '/admin/analytics'
+    | '/admin/kanban'
+    | '/admin/leads'
+    | '/admin/pixels'
+    | '/admin/settings'
+    | '/admin/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/admin' | '/cotacao' | '/login'
-  id: '__root__' | '/' | '/admin' | '/cotacao' | '/login'
+  to:
+    | '/'
+    | '/cotacao'
+    | '/login'
+    | '/admin/analytics'
+    | '/admin/kanban'
+    | '/admin/leads'
+    | '/admin/pixels'
+    | '/admin/settings'
+    | '/admin'
+  id:
+    | '__root__'
+    | '/'
+    | '/admin'
+    | '/cotacao'
+    | '/login'
+    | '/admin/analytics'
+    | '/admin/kanban'
+    | '/admin/leads'
+    | '/admin/pixels'
+    | '/admin/settings'
+    | '/admin/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  AdminRoute: typeof AdminRoute
+  AdminRoute: typeof AdminRouteWithChildren
   CotacaoRoute: typeof CotacaoRoute
   LoginRoute: typeof LoginRoute
 }
@@ -99,24 +182,77 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin/': {
+      id: '/admin/'
+      path: '/'
+      fullPath: '/admin/'
+      preLoaderRoute: typeof AdminIndexRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/settings': {
+      id: '/admin/settings'
+      path: '/settings'
+      fullPath: '/admin/settings'
+      preLoaderRoute: typeof AdminSettingsRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/pixels': {
+      id: '/admin/pixels'
+      path: '/pixels'
+      fullPath: '/admin/pixels'
+      preLoaderRoute: typeof AdminPixelsRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/leads': {
+      id: '/admin/leads'
+      path: '/leads'
+      fullPath: '/admin/leads'
+      preLoaderRoute: typeof AdminLeadsRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/kanban': {
+      id: '/admin/kanban'
+      path: '/kanban'
+      fullPath: '/admin/kanban'
+      preLoaderRoute: typeof AdminKanbanRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/analytics': {
+      id: '/admin/analytics'
+      path: '/analytics'
+      fullPath: '/admin/analytics'
+      preLoaderRoute: typeof AdminAnalyticsRouteImport
+      parentRoute: typeof AdminRoute
+    }
   }
 }
 
+interface AdminRouteChildren {
+  AdminAnalyticsRoute: typeof AdminAnalyticsRoute
+  AdminKanbanRoute: typeof AdminKanbanRoute
+  AdminLeadsRoute: typeof AdminLeadsRoute
+  AdminPixelsRoute: typeof AdminPixelsRoute
+  AdminSettingsRoute: typeof AdminSettingsRoute
+  AdminIndexRoute: typeof AdminIndexRoute
+}
+
+const AdminRouteChildren: AdminRouteChildren = {
+  AdminAnalyticsRoute: AdminAnalyticsRoute,
+  AdminKanbanRoute: AdminKanbanRoute,
+  AdminLeadsRoute: AdminLeadsRoute,
+  AdminPixelsRoute: AdminPixelsRoute,
+  AdminSettingsRoute: AdminSettingsRoute,
+  AdminIndexRoute: AdminIndexRoute,
+}
+
+const AdminRouteWithChildren = AdminRoute._addFileChildren(AdminRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  AdminRoute: AdminRoute,
+  AdminRoute: AdminRouteWithChildren,
   CotacaoRoute: CotacaoRoute,
   LoginRoute: LoginRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { createStart } from '@tanstack/react-start'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-  }
-}
